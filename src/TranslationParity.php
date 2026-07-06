@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Misaf\VendraTesting;
 
 use Illuminate\Support\Arr;
+use PHPUnit\Framework\Assert;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 
@@ -13,7 +14,7 @@ final class TranslationParity
     public static function assertModuleHasAtLeastTwoLocales(string $moduleName, string $languageDirectory): void
     {
         if (count(self::availableLocales($languageDirectory)) <= 1) {
-            test()->fail(sprintf('Module [%s] must have at least two locales.', $moduleName));
+            Assert::fail(sprintf('Module [%s] must have at least two locales.', $moduleName));
         }
 
         expect(true)->toBeTrue();
@@ -79,7 +80,7 @@ final class TranslationParity
         $locales = array_map(static fn(string $directory): string => basename($directory), $directories);
         sort($locales, SORT_STRING);
 
-        return array_values($locales);
+        return $locales;
     }
 
     /**
@@ -100,7 +101,7 @@ final class TranslationParity
 
         sort($files, SORT_STRING);
 
-        return array_values($files);
+        return $files;
     }
 
     /**
@@ -112,7 +113,7 @@ final class TranslationParity
         $keys = array_map(static fn(string $key): string => (string) $key, array_keys(Arr::dot($translations)));
         sort($keys, SORT_STRING);
 
-        return array_values($keys);
+        return $keys;
     }
 
     private static function localeFilePath(string $languageDirectory, string $locale, string $relativeFilePath): string
@@ -137,7 +138,7 @@ final class TranslationParity
             $targetFilePath = self::localeFilePath($languageDirectory, $targetLocale, $relativeFilePath);
 
             if ( ! file_exists($targetFilePath)) {
-                test()->fail(sprintf(
+                Assert::fail(sprintf(
                     'Module [%s] locale [%s] is missing file [%s] that exists in [%s].',
                     $moduleName,
                     $targetLocale,
@@ -158,7 +159,7 @@ final class TranslationParity
             $missingKeys = array_values(array_diff($sourceKeys, $targetKeys));
 
             if ([] !== $missingKeys) {
-                test()->fail(sprintf(
+                Assert::fail(sprintf(
                     'Module [%s] locale [%s] is missing keys from [%s] in file [%s]: %s',
                     $moduleName,
                     $targetLocale,
@@ -170,6 +171,9 @@ final class TranslationParity
         }
     }
 
+    /**
+     * @param  array<array-key, mixed>  $translations
+     */
     private static function assertSortedTranslationKeys(array $translations, string $context): void
     {
         if (array_is_list($translations)) {
@@ -182,7 +186,7 @@ final class TranslationParity
         usort($sortedKeys, static fn(string $left, string $right): int => strcmp($left, $right));
 
         if ($keys !== $sortedKeys) {
-            test()->fail(sprintf(
+            Assert::fail(sprintf(
                 '%s has unsorted keys. Expected order: [%s]. Actual order: [%s].',
                 $context,
                 implode(', ', $sortedKeys),
@@ -198,18 +202,24 @@ final class TranslationParity
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<array-key, mixed>
      */
     private static function requireTranslationArray(string $filePath, string $context): array
     {
-        /** @var mixed $translations */
         $translations = require $filePath;
 
-        if ( ! is_array($translations)) {
-            test()->fail(sprintf('%s must return an array.', $context));
-        }
+        self::assertIsTranslationArray($translations, $context);
 
-        /** @var array<string, mixed> $translations */
         return $translations;
+    }
+
+    /**
+     * @phpstan-assert array<array-key, mixed> $translations
+     */
+    private static function assertIsTranslationArray(mixed $translations, string $context): void
+    {
+        if ( ! is_array($translations)) {
+            Assert::fail(sprintf('%s must return an array.', $context));
+        }
     }
 }

@@ -4,41 +4,51 @@ declare(strict_types=1);
 
 use Misaf\VendraTesting\TranslationParity;
 use Pest\Expectation;
+use PHPUnit\Framework\Assert;
 
 if (function_exists('expect')) {
+    /**
+     * @param-closure-this Expectation<mixed> $this
+     */
     expect()->extend('toHaveAtLeastTwoLocales', function (string $moduleName): Expectation {
-        /** @var Expectation $expectation */
-        $expectation = $this;
-
         TranslationParity::assertModuleHasAtLeastTwoLocales(
             moduleName: $moduleName,
-            languageDirectory: (string) $expectation->value,
+            languageDirectory: vendraTestingLanguageDirectory($this->value),
         );
 
-        return $expectation;
+        return $this;
     });
 
+    /**
+     * @param-closure-this Expectation<mixed> $this
+     */
     expect()->extend('toHaveTranslationsInSync', function (string $moduleName): Expectation {
-        /** @var Expectation $expectation */
-        $expectation = $this;
-
         TranslationParity::assertModuleTranslationsAreInSync(
             moduleName: $moduleName,
-            languageDirectory: (string) $expectation->value,
+            languageDirectory: vendraTestingLanguageDirectory($this->value),
         );
 
-        return $expectation;
+        return $this;
     });
 
+    /**
+     * @param-closure-this Expectation<mixed> $this
+     */
     expect()->extend('toHaveSortedTranslationKeys', function (string $moduleName): Expectation {
-        /** @var Expectation $expectation */
-        $expectation = $this;
-
         TranslationParity::assertModuleTranslationKeysAreSorted(
             moduleName: $moduleName,
-            languageDirectory: (string) $expectation->value,
+            languageDirectory: vendraTestingLanguageDirectory($this->value),
         );
 
-        return $expectation;
+        return $this;
     });
+}
+
+function vendraTestingLanguageDirectory(mixed $languageDirectory): string
+{
+    if ( ! is_string($languageDirectory)) {
+        Assert::fail('The expectation value must be a language directory path string.');
+    }
+
+    return $languageDirectory;
 }
