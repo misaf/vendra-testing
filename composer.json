@@ -1,6 +1,5 @@
 {
     "name": "misaf/vendra-testing",
-    "version": "0.0.7",
     "description": "Shared testing utilities for Vendra modules",
     "keywords": [
         "laravel",
@@ -53,11 +52,6 @@
             "Misaf\\VendraTesting\\Tests\\": "tests/"
         }
     },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "13.x-dev"
-        }
-    },
     "scripts": {
         "analyse": "vendor/bin/phpstan analyse",
         "format": "vendor/bin/pint",
@@ -80,5 +74,10 @@
     },
     "minimum-stability": "stable",
     "prefer-stable": true,
-    "$schema": "https://getcomposer.org/schema.json"
+    "$schema": "https://getcomposer.org/schema.json",
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.0.x-dev"
+        }
+    }
 }

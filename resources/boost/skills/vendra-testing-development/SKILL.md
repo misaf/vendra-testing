@@ -1,6 +1,6 @@
 ---
 name: vendra-testing-development
-description: "Use this skill when creating, modifying, reviewing, or testing the Vendra Testing utilities module in app-modules/vendra-testing. Trigger for shared Pest Expectations, TranslationParity helpers, and other reusable test scaffolding consumed by other Vendra module test suites."
+description: "Use this skill when creating, modifying, reviewing, or testing the Vendra Testing utilities module in packages/vendra-testing. Trigger for shared Pest Expectations, TranslationParity helpers, and other reusable test scaffolding consumed by other Vendra module test suites."
 ---
 
 # Vendra Testing
@@ -11,7 +11,7 @@ Always use this skill together with `modular` for module structure, `laravel-bes
 
 ## Module Boundary
 
-Treat `app-modules/vendra-testing` as shared, module-agnostic test utilities.
+Treat `packages/vendra-testing` as shared, module-agnostic test utilities.
 
 - Use namespace `Misaf\VendraTesting`.
 - Own reusable Pest expectations and helpers (`Expectations`, `TranslationParity`) here.
@@ -28,5 +28,5 @@ Treat `app-modules/vendra-testing` as shared, module-agnostic test utilities.
 
 - Cover the utilities themselves with focused tests where behavior is non-trivial (e.g. key-sorting comparison logic).
 - Keep Pest architecture tests in `tests/ArchTest.php`: the `php`, `security`, and `laravel` presets, plus `arch()->expect('Misaf\VendraTesting')->not->toUse('Misaf\VendraTenant')`.
-- Run module checks: `composer --working-dir=app-modules/vendra-testing test` and `composer --working-dir=app-modules/vendra-testing analyse`.
+- Run module checks: `composer --working-dir=packages/vendra-testing test` and `composer --working-dir=packages/vendra-testing analyse`.
 - If PHP files changed, run `vendor/bin/pint --dirty --format agent`.
